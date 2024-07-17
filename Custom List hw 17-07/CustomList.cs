@@ -1,49 +1,48 @@
 ﻿using System.Collections;
-using System.Threading.Channels;
 
 namespace Custom_List_hw_17_07
 {
     public class CustomList<T> : IEnumerable<T>
     {
 
-        private T[] lists;
+        private T[] Lists;
         public CustomList()
         {
-            lists = new T[0];
+            Lists = new T[0];
         }
 
         public T this[int index]
         {
             get
-              => lists[lists.Length - 1 - index];
+              => Lists[Lists.Length - 1 - index];
             set
-              => lists[lists.Length - 1 - index] = value;
+              => Lists[Lists.Length - 1 - index] = value;
         }
 
         public void Add(T item)
         {
-            Array.Resize(ref lists, lists.Length + 1);
-            lists[^1] = item;
+            Array.Resize(ref Lists, Lists.Length + 1);
+            Lists[^1] = item;
         }
 
-        public T Find(T item)
+        public T? Find(T item)
         {
-            foreach (var t in lists)
+            foreach (var t in Lists)
             {
                 if (t.Equals(item))
                 {
                     return t;
                 }
             }
-            return default(T); 
+            return default(T);
         }
 
         public CustomList<T> FindAll(Predicate<T> find)
         {
             CustomList<T> list = new CustomList<T>();
-            foreach (var t in lists)
+            foreach (var t in Lists)
             {
-                if (t.Equals(find))
+                if (find(t))
                 {
                     list.Add(t);
                 }
@@ -53,36 +52,49 @@ namespace Custom_List_hw_17_07
 
         public void Remove(T item)
         {
-            for (int i = 0; i < lists.Length; i++)
+            for (int i = 0; i < Lists.Length; i++)
             {
-                if (item.Equals(lists[i]))
+                if (item.Equals(Lists[i]))
                 {
-                    for (int j = i; j < lists.Length - 1; j++)
+                    for (int j = i; j < Lists.Length - 1; j++)
                     {
-                        lists[j] = lists[j + 1];
+                        Lists[j] = Lists[j + 1];
                     }
                 }
             }
-            Array.Resize(ref lists, lists.Length - 1);
+            Array.Resize(ref Lists, Lists.Length - 1);
         }
 
-        public void RemoveAll(Predicate<T> remove)
+        public int RemoveAll(Predicate<T> remove)
         {
-            Array.Resize(ref lists, 0);
+            int removeCount = 0;
+            for (int i = 0; i < Lists.Length; i++)
+            {
+                if (remove(Lists[i]))
+                {
+                    for(int j = i; j < Lists.Length - 1; j++)
+                    {
+                        Lists[j] = Lists[j + 1];
+                    }
+                    Lists[Lists.Length - 1] = default(T);
+                    removeCount++;
+                }
+            }
+            return removeCount;
         }
         public IEnumerator<T> GetEnumerator()
         {
-            for (int i = lists.Length - 1; i >= 0; i--)
+            for (int i = Lists.Length - 1; i >= 0; i--)
             {
-                yield return lists[i];
+                yield return Lists[i];
             }
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            for (int i = lists.Length - 1; i >= 0; i--)
+            for (int i = Lists.Length - 1; i >= 0; i--)
             {
-                yield return lists[i];
+                yield return Lists[i];
             }
         }
     }

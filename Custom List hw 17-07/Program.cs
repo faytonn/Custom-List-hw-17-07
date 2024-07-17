@@ -41,3 +41,6 @@ foreach (var element in list)
 {
     Console.WriteLine(element);
 }
+
+List<int> smth = new List<int>();
+smth.Add(1);
